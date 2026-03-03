@@ -117,7 +117,7 @@ graph LR
 You can install this skill pack through a branded NPX entrypoint:
 
 ```bash
-npx @sheshiyer/swarm-architect-skill
+npx @tryambakam-noesis/swarm-architect-skill
 ```
 
 Under the hood it runs:

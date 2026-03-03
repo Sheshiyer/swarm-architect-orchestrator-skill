@@ -1,11 +1,8 @@
 {
-  "name": "@sheshiyer/swarm-architect-skill",
-  "version": "0.3.0",
+  "name": "@tryambakam-noesis/swarm-architect-skill",
+  "version": "0.3.2",
   "description": "NPX installer wrapper for Swarm Architect + Taskmaster OpenClaw orchestration skills",
   "type": "module",
-  "bin": {
-    "swarm-skill-install": "bin/swarm-skill-install.js"
-  },
   "scripts": {
     "start": "node bin/swarm-skill-install.js",
     "install:skills": "node bin/swarm-skill-install.js"
@@ -41,5 +38,6 @@
   ],
   "engines": {
     "node": ">=18"
-  }
+  },
+  "bin": "bin/swarm-skill-install.js"
 }

@@ -5,7 +5,7 @@ This repo provides a thin NPX wrapper on top of the skills.sh ecosystem.
 ## One-liner
 
 ```bash
-npx @sheshiyer/swarm-architect-skill
+npx @tryambakam-noesis/swarm-architect-skill
 ```
 
 Equivalent underlying command:
@@ -19,11 +19,11 @@ npx skills add Sheshiyer/swarm-architect-orchestrator-skill
 - Override source repo:
 
 ```bash
-npx @sheshiyer/swarm-architect-skill --repo Sheshiyer/swarm-architect-orchestrator-skill
+npx @tryambakam-noesis/swarm-architect-skill --repo Sheshiyer/swarm-architect-orchestrator-skill
 ```
 
 - Pass through extra args to `skills add`:
 
 ```bash
-npx @sheshiyer/swarm-architect-skill -- --help
+npx @tryambakam-noesis/swarm-architect-skill -- --help
 ```

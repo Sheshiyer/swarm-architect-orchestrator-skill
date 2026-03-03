@@ -1,0 +1,118 @@
+name: OpenClaw Swarm Intake
+
+on:
+  workflow_dispatch:
+    inputs:
+      idea:
+        description: "Idea statement from OpenClaw"
+        required: true
+        type: string
+      planning_depth:
+        description: "Planning depth"
+        required: true
+        default: "standard"
+        type: choice
+        options: [lean, standard, deeply_detailed]
+      delivery_mode:
+        description: "Delivery mode"
+        required: true
+        default: "prototype"
+        type: choice
+        options: [prototype, production, hardening]
+      timeline:
+        description: "Timeline (e.g., 2-3 days)"
+        required: false
+        type: string
+      initial_tasks:
+        description: "Comma-separated Task IDs (e.g., T001,T003,T006)"
+        required: false
+        default: "T001,T002,T003"
+        type: string
+      notes:
+        description: "Additional OpenClaw context"
+        required: false
+        type: string
+  repository_dispatch:
+    types: [openclaw.swarm.intake]
+
+permissions:
+  contents: read
+  actions: write
+  issues: write
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Normalize payload
+        id: payload
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const isRepoDispatch = context.eventName === 'repository_dispatch';
+            const p = isRepoDispatch ? (context.payload.client_payload || {}) : context.payload.inputs;
+            const idea = (p.idea || '').trim();
+            if (!idea) {
+              core.setFailed('Missing required field: idea');
+              return;
+            }
+            const planningDepth = (p.planning_depth || 'standard').trim();
+            const deliveryMode = (p.delivery_mode || 'prototype').trim();
+            const timeline = (p.timeline || 'unspecified').trim();
+            const notes = (p.notes || 'none').trim();
+
+            let tasks = p.initial_tasks || 'T001,T002,T003';
+            if (Array.isArray(tasks)) tasks = tasks.join(',');
+            const taskList = tasks.split(',').map(t => t.trim().toUpperCase()).filter(Boolean);
+
+            core.setOutput('idea', idea);
+            core.setOutput('planning_depth', planningDepth);
+            core.setOutput('delivery_mode', deliveryMode);
+            core.setOutput('timeline', timeline);
+            core.setOutput('notes', notes);
+            core.setOutput('tasks_json', JSON.stringify(taskList));
+
+      - name: Post intake trace comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const q = `repo:${context.repo.owner}/${context.repo.repo} "[MVP-ORCH][T001]" in:title is:issue`;
+            const result = await github.rest.search.issuesAndPullRequests({ q, per_page: 1 });
+            if (!result.data.items.length) {
+              core.warning('No routing issue found for T001');
+              return;
+            }
+            const issue_number = result.data.items[0].number;
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number,
+              body: [
+                '🦾 **OpenClaw Swarm Intake Triggered**',
+                `- Idea: ${{ steps.payload.outputs.idea }}`,
+                `- Planning depth: ${{ steps.payload.outputs.planning_depth }}`,
+                `- Delivery mode: ${{ steps.payload.outputs.delivery_mode }}`,
+                `- Timeline: ${{ steps.payload.outputs.timeline }}`,
+                `- Notes: ${{ steps.payload.outputs.notes }}`,
+                `- Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+              ].join('\n')
+            });
+
+      - name: Dispatch initial taskmaster tasks
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tasks = JSON.parse(`${{ steps.payload.outputs.tasks_json }}`);
+            for (const taskId of tasks) {
+              await github.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'taskmaster-dispatch.yml',
+                ref: context.ref.replace('refs/heads/', ''),
+                inputs: {
+                  task_id: taskId,
+                  mode: 'analyze',
+                  notes: `OpenClaw intake: ${{ steps.payload.outputs.idea }}`
+                }
+              });
+              core.info(`Dispatched ${taskId}`);
+            }

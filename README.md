@@ -104,6 +104,30 @@ graph LR
 > **Overall: 93% — orchestration-ready**
 <!-- readme-gen:end:health -->
 
+
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=12,13,14&height=1" width="100%" />
+
+## OpenClaw Integration (Idea → Swarm Flow)
+
+You can now trigger swarm planning from OpenClaw without CLI-first behavior.
+
+### Trigger phrase
+- **"Use swarm architect for this idea"**
+
+### Wrapper assets
+- [`docs/OPENCLAW_INTEGRATION.md`](docs/OPENCLAW_INTEGRATION.md)
+- [`integrations/openclaw/swarm-intake.schema.json`](integrations/openclaw/swarm-intake.schema.json)
+- [`integrations/openclaw/swarm-wrapper-playbook.md`](integrations/openclaw/swarm-wrapper-playbook.md)
+- [`.github/workflows/openclaw-swarm-intake.yml`](.github/workflows/openclaw-swarm-intake.yml)
+
+### What happens
+1. OpenClaw captures idea + constraints
+2. Wrapper normalizes payload
+3. Initial Taskmaster tasks are auto-dispatched
+4. Event sync + milestone digest continue orchestration
+
+
 ## License
 
 MIT (recommended). Add a LICENSE file if your org requires explicit licensing.

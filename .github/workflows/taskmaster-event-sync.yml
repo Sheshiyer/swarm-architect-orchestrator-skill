@@ -1,0 +1,55 @@
+name: Taskmaster Event Sync
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled, closed, reopened]
+  pull_request:
+    types: [closed]
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  sync-issues:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add automation trace comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map(l => typeof l === 'string' ? l : l.name).join(', ') || 'none';
+            const body = [
+              '⚙️ **Taskmaster Event Sync**',
+              `- Action: ${context.payload.action}`,
+              `- Labels: ${labels}`,
+              `- Issue: #${issue.number}`,
+              `- Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            ].join('\n');
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: issue.number,
+              body
+            });
+
+  sync-pr:
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Note PR merge sync
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = [
+              '✅ **Taskmaster PR Merge Sync**',
+              `PR #${pr.number} merged into ${pr.base.ref}`,
+              `Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            ].join('\n');
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: pr.number,
+              body
+            }).catch(() => {});

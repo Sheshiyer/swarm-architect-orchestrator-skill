@@ -1,0 +1,45 @@
+{
+  "name": "@sheshiyer/swarm-architect-skill",
+  "version": "0.3.0",
+  "description": "NPX installer wrapper for Swarm Architect + Taskmaster OpenClaw orchestration skills",
+  "type": "module",
+  "bin": {
+    "swarm-skill-install": "bin/swarm-skill-install.js"
+  },
+  "scripts": {
+    "start": "node bin/swarm-skill-install.js",
+    "install:skills": "node bin/swarm-skill-install.js"
+  },
+  "keywords": [
+    "skills",
+    "skills.sh",
+    "agent",
+    "swarm-architect",
+    "taskmaster",
+    "openclaw",
+    "github-actions"
+  ],
+  "homepage": "https://github.com/Sheshiyer/swarm-architect-orchestrator-skill",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sheshiyer/swarm-architect-orchestrator-skill.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Sheshiyer/swarm-architect-orchestrator-skill/issues"
+  },
+  "license": "MIT",
+  "author": "Sheshiyer",
+  "files": [
+    "bin",
+    "skills",
+    "integrations",
+    "docs",
+    ".github/workflows",
+    "README.md",
+    "LICENSE",
+    "CONTRIBUTING.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -108,6 +108,26 @@ graph LR
 
 <img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=12,13,14&height=1" width="100%" />
 
+
+
+<img src="https://capsule-render.vercel.app/api?type=rect&color=gradient&customColorList=12,13,14&height=1" width="100%" />
+
+## NPX Install Layer (skills.sh wrapper)
+
+You can install this skill pack through a branded NPX entrypoint:
+
+```bash
+npx @sheshiyer/swarm-architect-skill
+```
+
+Under the hood it runs:
+
+```bash
+npx skills add Sheshiyer/swarm-architect-orchestrator-skill
+```
+
+More options: [`docs/NPX_INSTALL.md`](docs/NPX_INSTALL.md)
+
 ## OpenClaw Integration (Idea → Swarm Flow)
 
 You can now trigger swarm planning from OpenClaw without CLI-first behavior.
